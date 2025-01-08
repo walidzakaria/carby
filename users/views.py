@@ -9,9 +9,10 @@ from rest_framework.decorators import action, api_view, permission_classes
 from .serializers import (
     UserProfileDetailedSerializer, UserSimpleSerializer,
     UserProfileSerializer, UserGroupsSerializer, ProfileSerializer, UserListSerializer,
-    UserProfileCreateSerializer, UserPasswordChangeSerializer,
+    UserProfileCreateSerializer, UserPasswordChangeSerializer, UserViewSerializer,
+    ActiveUserSerializer
 )
-
+from .models import ActiveUser, UserView
 
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import UserProfile
@@ -19,9 +20,11 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
+from .utils import change_permissions
+from users.permissions import HasModelPermissionOrAdmin
 from django.core.cache import cache
-from datetime import datetime, timedelta
-
+from datetime import timedelta
+from django.utils import timezone
 
 # Create your views here.
 class UserInfoView(APIView):
@@ -202,13 +205,39 @@ class ChangeUserPasswordView(APIView):
         return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserViewViewSet(ModelViewSet):
+    permission_classes = [IsAdminUser]
+    queryset = UserView.objects.all()
+    serializer_class = UserViewSerializer
+    lookup_field = 'user__id'
+
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        response = super().update(request, *args, **kwargs)
+        user = User.objects.get(pk=request.data['user'])
+        change_permissions(user, request.data)
+        return response
+    
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        user = User.objects.get(pk=request.data['user'])
+        change_permissions(user, request.data)
+        return response
+
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def heartbeat(request):
     if request.method == 'GET':
         if request.user.is_authenticated:
-            now = datetime.now()
-            cache.set(f'user_active_{request.user.id}', now, 300) # 5-minute timeout
+            active_user = ActiveUser.objects.filter(user=request.user).first()
+            if active_user:
+                active_user.last_seen = timezone.now()
+                active_user.save()
+            else:
+                print(timezone.now())
+                active_user = ActiveUser(user=request.user, last_seen=timezone.now())
+                active_user.save()
             return Response(data={'status': 'heartbeat OK'}, status=status.HTTP_200_OK)
         return Response(data={'status': 'hearbeat not OK'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
@@ -217,17 +246,6 @@ def heartbeat(request):
 @permission_classes([IsAuthenticated])
 def get_online_users(request):
     if request.method == 'GET':
-        online_users = []
-        for user in User.objects.filter(is_active=True).all():
-            last_seen = cache.get(f'user_active_{user.id}')
-            new_user = {
-                'id': user.id,
-                'username': user.username,
-                'online': False,
-                'last_seen': last_seen,
-            }
-            print(user, user.is_authenticated)
-            if user.is_authenticated and last_seen and datetime.now() - last_seen < timedelta(minutes=5): # Online if last seen was < 5 minutes ago
-                new_user['online'] = True
-            online_users.append(new_user)
-        return Response(data=online_users, status=status.HTTP_200_OK)
+        last_seen = ActiveUser.objects.all()
+        serializer = ActiveUserSerializer(last_seen, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

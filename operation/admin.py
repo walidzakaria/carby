@@ -6,7 +6,7 @@ from .models import Customer, Quotation, QuotationLine, Vendor
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('governate', 'region_city', 'type', 'customer_id', 'name', )
-    list_filter = ('type', )
+    list_filter = ('type', 'is_active', )
     search_fields = ('customer_id', 'name', )
     readonly_fields = ('creation_date', 'modified_date', 'created_by', 'updated_by', )
     
@@ -40,6 +40,7 @@ class QuotationAdmin(admin.ModelAdmin):
 class VendorAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'phone', 'instapay', 'bank_account', )
     search_fields = ('name', 'phone', )
+    list_filter = ('is_active', )
     readonly_fields = ('creation_date', 'modified_date', 'created_by', 'updated_by', )
     
     def save_model(self, request, obj, form, change):

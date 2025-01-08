@@ -15,6 +15,7 @@ class Customer(models.Model):
         BUSINESS = 'B', _('Business')
         FOREIGNER = 'F', _('Foreigner')
     
+    name = models.CharField(max_length=150)
     governate = models.CharField(max_length=50)
     region_city = models.CharField(max_length=50)
     street = models.CharField(max_length=150)
@@ -22,8 +23,7 @@ class Customer(models.Model):
     additional_information = models.TextField(max_length=200, blank=True, null=True)
     type = models.CharField(max_length=1, choices=CustomerType.choices, default=CustomerType.BUSINESS)
     customer_id = models.CharField(max_length=20, unique=True)
-    name = models.CharField(max_length=150)
-    
+    is_active = models.BooleanField(default=True, verbose_name=_('Is Active'))
     creation_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)
     created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='customer_created_by',
@@ -40,8 +40,9 @@ class Customer(models.Model):
 class Vendor(models.Model):
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=11, blank=True, null=True)
-    instapay = models.CharField(max_length=11, blank=True, null=True)
+    instapay = models.CharField(max_length=50, blank=True, null=True)
     bank_account = models.CharField(max_length=20, blank=True, null=True)
+    is_active = models.BooleanField(default=True, verbose_name=_('Is Active'))
     
     creation_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)

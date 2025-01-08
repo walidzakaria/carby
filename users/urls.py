@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 
 from .views import (
     UserInfoView, UserDetailView, UserDetailViewNoId, ChangeUserPasswordView,
-    heartbeat, get_online_users,
+    UserViewViewSet, heartbeat, get_online_users,
 )
 
 
@@ -17,5 +17,6 @@ urlpatterns = [
 ]
 
 router = DefaultRouter()
+router.register('user-views', UserViewViewSet, basename='user-views')
 
 urlpatterns += router.urls

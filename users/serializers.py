@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User, Group
-from .models import ActiveUser, UserProfile
+from .models import UserProfile, UserView, ActiveUser
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -34,14 +34,22 @@ class ProfileSerializer(serializers.ModelSerializer):
                   'address', 'about', 'photo', )
 
 
+class UserViewSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = UserView
+        fields = '__all__'
+
+
 class UserProfileDetailedSerializer(serializers.ModelSerializer):
     groups = UserGroupsSerializer(many=True)
     profile = UserProfileSerializer()
+    user_view = UserViewSerializer(read_only=True)
     
     class Meta:
         model = User
         fields = ('id', 'first_name', 'last_name', 'username', 'email', 'groups',
-                  'profile', 'is_active', )
+                  'profile', 'is_active', 'user_view', )
 
 
 class UserListSerializer(serializers.ModelSerializer):
@@ -79,9 +87,8 @@ class UserPasswordChangeSerializer(serializers.ModelSerializer):
         fields = ('password', 're_password', )
 
 
-
 class ActiveUserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = ActiveUser
-        fields = ('id', 'last_seen', 'status', )
+        fields = ('user', 'last_seen', 'online', )

@@ -1,11 +1,17 @@
 from django.contrib import admin
 from .models import Product, Description, UnitType
 
-# Register your models here.
+
+class DescriptionInline(admin.TabularInline):
+    model = Description
+    extra = 0
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('code', 'name', )
     search_fields = ('code', 'name', )
+    inlines = [DescriptionInline, ]
     
 
 @admin.register(Description)

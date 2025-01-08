@@ -91,6 +91,7 @@ INSTALLED_APPS = [
     'explorer',
     
     'users',
+    'dashboard',
     'definitions',
     'operation',
 ]

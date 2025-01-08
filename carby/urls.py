@@ -54,6 +54,7 @@ urlpatterns = [
     
     path('api/definitions/', include('definitions.urls')),
     path('api/operation/', include('operation.urls')),
+    path('api/dashboard/', include('dashboard.urls')),
     
     re_path(r'^.*$', TemplateView.as_view(template_name='index.html')),
 ]
