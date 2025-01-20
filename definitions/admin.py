@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Product, Description, UnitType
+from .models import Product, Description, UnitType, Condition
 
 
 class DescriptionInline(admin.TabularInline):
@@ -16,11 +16,16 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Description)
 class DescriptionAdmin(admin.ModelAdmin):
-    list_display = ('product', 'description', )
-    search_fields = ('product__code', 'product__name', 'description', )
+    list_display = ('product', 'name', )
+    search_fields = ('product__code', 'product__name', 'name', )
 
 
 @admin.register(UnitType)
 class UnitTypeAdmin(admin.ModelAdmin):
     list_display = ('code', 'description', )
     search_fields = ('code', 'description', )
+
+
+@admin.register(Condition)
+class ConditionAdmin(admin.ModelAdmin):
+    list_display = ('name', )

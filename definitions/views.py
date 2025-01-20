@@ -2,15 +2,22 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Product, Description, UnitType
-from .serializers import ProductSerializer, DescriptionSerializer, UnitTypeSerializer
+from .models import Product, Description, UnitType, Condition
+from .serializers import ProductSerializer, DescriptionSerializer, UnitTypeSerializer, ProductDetailedSerializer, ConditionSerializer
 from users.permissions import HasModelPermissionOrAdmin
+from rest_framework.permissions import IsAuthenticated
+
 
 # Create your views here.
 class ProductViewSet(ModelViewSet):
     permission_classes = [HasModelPermissionOrAdmin]
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return ProductDetailedSerializer
+        return ProductSerializer
     
     def create(self, request, *args, **kwargs):
         descriptions = request.data.pop('descriptions')
@@ -46,7 +53,6 @@ class ProductViewSet(ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         
-        print('data', request.data)
         descriptions = request.data.pop('descriptions')
         
         product = request.data
@@ -58,27 +64,25 @@ class ProductViewSet(ModelViewSet):
         if product_serializer.is_valid():
             product_serializer.save()
             
+            
             for description in descriptions:
                 description['product'] = product_id
-            
-            description_serializer = DescriptionSerializer(data=descriptions, many=True)
+                description_id = description.get('id', 0) or 0
+                if description_id > 0:
+                    existing_description = Description.objects.get(pk=description['id'])
+                    description_serializer = DescriptionSerializer(existing_description, data=description)
+                    if description_serializer.is_valid():
+                        description_serializer.save()
+                    else:
+                        return Response(description_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    description_serializer = DescriptionSerializer(data=description)
+                    if description_serializer.is_valid():
+                        description_serializer.save()
+                    else:
+                        return Response(description_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-            if description_serializer.is_valid():
-                # remove old descriptions
-                Description.objects.filter(product=product_id).delete()
-                
-                description_serializer.save()
-                
-                response_data = {
-                    'product': product_serializer.data,
-                    'descriptions': description_serializer.data,
-                }
-                return Response(data=response_data, status=status.HTTP_200_OK)
-            response_data = {
-                'product': [],
-                'descriptions': description_serializer.errors,
-            }
-            return Response(data=response_data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(product_serializer.data, status=status.HTTP_201_CREATED)
         return Response(product_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -92,3 +96,9 @@ class UnitTypeViewSet(ModelViewSet):
     permission_classes = [HasModelPermissionOrAdmin]
     queryset = UnitType.objects.all()
     serializer_class = UnitTypeSerializer
+
+
+class ConditionViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = Condition.objects.all()
+    serializer_class = ConditionSerializer

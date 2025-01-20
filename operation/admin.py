@@ -24,8 +24,8 @@ class QuotationLineTabular(admin.TabularInline):
 
 @admin.register(Quotation)
 class QuotationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'customer', 'date_time_issued', 'internal_id', )
-    search_fields = ('customer__name', 'internal_id', )
+    list_display = ('id', 'customer', 'date_time_issued', )
+    search_fields = ('customer__name', )
     inlines = [QuotationLineTabular]
     readonly_fields = ('creation_date', 'modified_date', 'created_by', 'updated_by', )
     

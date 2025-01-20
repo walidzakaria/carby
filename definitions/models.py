@@ -13,11 +13,11 @@ class Product(models.Model):
 
 
 class Description(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    description = models.CharField(max_length=150)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='descriptions')
+    name = models.CharField(max_length=150)
     
     def __str__(self):
-        return self.description
+        return self.name
 
 
 class UnitType(models.Model):
@@ -26,3 +26,14 @@ class UnitType(models.Model):
 
     def __str__(self):
         return self.description
+
+    class Meta:
+        ordering = ('code', )
+
+
+class Condition(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    conditions = models.TextField(max_length=2000, blank=True, null=True)
+    
+    def __str__(self):
+        return self.name

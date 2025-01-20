@@ -94,6 +94,7 @@ INSTALLED_APPS = [
     'dashboard',
     'definitions',
     'operation',
+    'reports',
 ]
 
 MIDDLEWARE = [

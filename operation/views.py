@@ -1,14 +1,19 @@
 from django.shortcuts import render
 
-from .models import Customer, Vendor, Quotation
+from .models import Customer, Vendor, Quotation, QuotationLine
 from .serializers import CustomerSerializer, VendorSerializer, QuotationSerializer
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from .serializers import QuotationLineSerializer
+from rest_framework.pagination import PageNumberPagination
+from django.utils.dateparse import parse_date
+
+from .serializers import QuotationLineSerializer, QuotationSearchSerizalizer
 from users.permissions import HasModelPermissionOrAdmin
 
+class NineRecordsPagination(PageNumberPagination):
+    page_size = 9
 
 class CustomerViewSet(viewsets.ModelViewSet):
     permission_classes = [HasModelPermissionOrAdmin]
@@ -21,15 +26,113 @@ class VendorViewSet(viewsets.ModelViewSet):
     serializer_class = VendorSerializer
 
 class QuotationViewSet(viewsets.ModelViewSet):
-    permission_classes = [HasModelPermissionOrAdmin]
+    # permission_classes = [HasModelPermissionOrAdmin]
     queryset = Quotation.objects.all()
     serializer_class = QuotationSerializer
 
-    # @action(detail=True, methods=['post'])
-    # def add_lines(self, request, pk=None):
-    #     quotation = self.get_object()
-    #     serializer = QuotationLineSerializer(data=request.data, many=True)
-    #     if serializer.is_valid():
-    #         serializer.save(quotation=quotation)
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def create(self, request, *args, **kwargs):
+        lines = request.data.pop('lines')
+        quotation = request.data
+        quotation['created_by'] = request.user.pk
+        quotation['updated_by'] = request.user.pk
+
+        serializer = self.get_serializer(data=quotation)
+        
+        if serializer.is_valid():
+            new_quotation = serializer.save()
+            
+            for line in lines:
+                line['quotation'] = new_quotation.id
+            line_serializer = QuotationLineSerializer(data=lines, many=True)
+
+            
+            if line_serializer.is_valid():
+                line_serializer.save()
+                
+                response = {
+                    'quotation': serializer.data,
+                    'lines': line_serializer.data,
+                }
+                return Response(data=response, status=status.HTTP_201_CREATED)
+            else:
+                new_quotation.delete()
+                response = {
+                    'quotation': [],
+                    'lines': line_serializer.errors,
+                }
+                return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            response = {
+                'quotation': serializer.errors,
+                'lines': [],
+            }
+            return Response(data=response, status=status.HTTP_400_BAD_REQUEST)
+        
+
+    def update(self, request, *args, **kwargs):
+        lines = request.data.pop('lines')
+        quotation = request.data
+        
+        quotation['updated_by'] = request.user.pk
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=quotation, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        
+        for line in lines:
+            line['quotation'] = instance.id
+            
+        line_serializer = QuotationLineSerializer(data=lines, many=True)
+
+        if line_serializer.is_valid():
+            QuotationLine.objects.filter(quotation=instance).delete()
+            
+            line_serializer.save()
+            
+            if getattr(instance, '_prefetched_objects_cache', None):
+                instance._prefetched_objects_cache = {}
+            return Response(serializer.data)
+        return Response(line_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(detail=True, methods=['post'], url_path='upload-supply-order')
+    def upload_supply_order(self, request, pk=None):
+        quotation = self.get_object()
+        supply_order = request.FILES.get('supply_order')
+
+        if not supply_order:
+            return Response({'error': 'No supply order file provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        quotation.supply_order.save(supply_order.name, supply_order)
+        quotation.save()
+
+        return Response({'file': quotation.supply_order.name}, status=status.HTTP_200_OK)
+
+    
+    @action(detail=False, methods=['get'], url_path='search')
+    def search(self, request):
+
+        customer = request.query_params.get('customer')
+        start_date = request.query_params.get('start_date')
+        end_date = request.query_params.get('end_date')
+        status = request.query_params.get('status')
+        start_date = parse_date(start_date)
+        end_date = parse_date(end_date)
+        
+        queryset = self.get_queryset().filter(date_time_issued__range=(start_date, end_date))
+
+        if customer:
+            queryset = queryset.filter(customer=customer)
+        
+        if status:
+            queryset = queryset.filter(status=status)
+        
+        paginator = NineRecordsPagination()
+        page = paginator.paginate_queryset(queryset, request, view=self)
+        
+        if page is not None:
+            serializer = QuotationSearchSerizalizer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
+        serializer = QuotationSearchSerizalizer(queryset, many=True)
+        return Response(serializer.data)
