@@ -10,7 +10,8 @@ from django.db import connection
 from django.utils.dateparse import parse_date
 from datetime import datetime, time
 
-from operation.models import Vendor
+from operation.models import Vendor, Quotation, QuotationLine
+from operation.serializers import QuotationLineDetailedUnitSerializer
 
 class SupplyOrdersView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -18,6 +19,7 @@ class SupplyOrdersView(APIView):
     def get(self, request):
         vendor = request.query_params.get('vendor')
         quotation_id = request.query_params.get('quotation_id')
+        show_template = request.query_params.get('show_template', 'false').lower() == 'true'
 
         with connection.cursor() as cursor:
             query = '''
@@ -49,9 +51,42 @@ class SupplyOrdersView(APIView):
                 'code': document_number,
                 'date': datetime.now().strftime("%Y-%m-%d"),
                 'rows': row_data,
+                'show_template': show_template,
                 'total': f"{sum(row['value'] for row in row_data):,.2f}"
             }
             
             response = render(request, 'reports/supply_order.html', context=context)
             return response
+
+
+class QuotationOrdersView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+
+        quotation_id = request.query_params.get('quotation_id')
+        show_template = request.query_params.get('show_template', 'false').lower() == 'true'
+
+        quotation = Quotation.objects.get(pk=quotation_id)
+        quotation_lines = QuotationLine.objects.filter(quotation=quotation)
+        
+        row_data = QuotationLineDetailedUnitSerializer(quotation_lines, many=True).data
+        tax_dict = {
+            'T1': 'ضريبة القيمة المضافة',
+            'T2': 'ضريبة الجدول',
+        }
+        context = {
+            'customer': quotation.customer.name,
+            'code': quotation_id,
+            'date': quotation.date_time_issued.strftime("%Y-%m-%d"),
+            'rows': row_data,
+            'conditions': quotation.conditions,
+            'net_amount': f"{quotation.quotation_net_amount:,.2f}",
+            'tax': tax_dict[quotation.tax],
+            'tax_amount': f"{quotation.tax_amount:,.2f}",
+            'total_amount': f"{quotation.quotation_total_amount:,.2f}",
+            'show_template': show_template,
+        }
             
+        response = render(request, 'reports/quotation.html', context=context)
+        return response

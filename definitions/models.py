@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
 class Product(models.Model):
@@ -37,3 +38,22 @@ class Condition(models.Model):
     
     def __str__(self):
         return self.name
+
+
+class CashType(models.Model):
+    
+    class CashCategoryType(models.TextChoices):
+        REVENUE = 'Revenue', _('Revenue')
+        EXPENSE = 'Expense', _('Expense')
+        
+    class CashTypeType(models.TextChoices):
+        CASH = 'Cash', _('Cash')
+        CREDIT = 'Credit', _('Credit')
+    
+    category = models.CharField(max_length=10, choices=CashCategoryType.choices, default=CashCategoryType.REVENUE)
+    type = models.CharField(max_length=6, choices=CashTypeType.choices, default=CashTypeType.CASH)
+    
+    description = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.description

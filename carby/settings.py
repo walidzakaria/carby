@@ -38,9 +38,9 @@ LOCAL = config.getboolean('App', 'LOCAL')
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '64.226.64.150',
-    'avriostores.xyz',
-    'www.avriostores.xyz',
+    '165.227.162.252',
+    'planetgeneralsupplies.com',
+    'www.planetgeneralsupplies.com',
 ]
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
@@ -50,25 +50,25 @@ CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:8000',
     'http://127.0.0.1:9000',
     'http://127.0.0.1:8080',
-    'http://64.226.64.150:8000',
-    'http://64.226.64.150',
-    'http://avriostores.xyz',
-    'http://www.avriostores.xyz',
-    'https://avriostores.xyz',
-    'https://www.avriostores.xyz',
+    'http://165.227.162.252:8000',
+    'http://165.227.162.252',
+    'http://planetgeneralsupplies.com',
+    'http://www.planetgeneralsupplies.com',
+    'https://planetgeneralsupplies.com',
+    'https://www.planetgeneralsupplies.com',
 )
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://64.226.64.150',
+    'http://165.227.162.252',
     'http://localhost',
     'http://127.0.0.1',
-    'http://avriostores.xyz',
-    'http://www.avriostores.xyz',
-    'https://avriostores.xyz',
-    'https://www.avriostores.xyz',
+    'http://planetgeneralsupplies.com',
+    'http://www.planetgeneralsupplies.com',
+    'https://planetgeneralsupplies.com',
+    'https://www.planetgeneralsupplies.com',
 ]
 
-BASE_URL = 'https://avriostores.xyz'
+BASE_URL = 'https://planetgeneralsupplies.com'
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 # CSRF_COOKIE_SECURE = False  # Set to True if using HTTPS
 
@@ -224,12 +224,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:9000",
     "http://127.0.0.1:9000",
-    'http://64.226.64.150',
-    'http://64.226.64.150:8000',
-    'http://avriostores.xyz',
-    'http://www.avriostores.xyz',
-    'https://avriostores.xyz',
-    'https://www.avriostores.xyz',
+    'http://165.227.162.252',
+    'http://165.227.162.252:8000',
+    'http://planetgeneralsupplies.com',
+    'http://www.planetgeneralsupplies.com',
+    'https://planetgeneralsupplies.com',
+    'https://www.planetgeneralsupplies.com',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True

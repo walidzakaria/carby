@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Customer, Quotation, QuotationLine, Vendor
+from .models import Customer, Quotation, QuotationLine, Vendor, QuotationTransaction
 
 
 # Register your models here.
@@ -42,6 +42,21 @@ class VendorAdmin(admin.ModelAdmin):
     search_fields = ('name', 'phone', )
     list_filter = ('is_active', )
     readonly_fields = ('creation_date', 'modified_date', 'created_by', 'updated_by', )
+    
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            obj.created_by = request.user
+        obj.updated_by = request.user
+        return super().save_model(request, obj, form, change)
+
+
+@admin.register(QuotationTransaction)
+class QuotationTransactionAdmin(admin.ModelAdmin):
+    list_display = ('quotation', 'cash_type', 'amount', 'transaction_date', 'paid', 'payment_date', )
+    list_filter = ('paid', 'cash_type', )
+    search_fields = ('quotation__customer__name', 'quotation__customer__customer_id', 'quotation__customer__phone', )
+    readonly_fields = ('creation_date', 'modified_date', 'created_by', 'updated_by', )
+    autocomplete_fields = ('quotation', 'cash_type', )
     
     def save_model(self, request, obj, form, change):
         if not obj.pk:

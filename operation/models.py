@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from simple_history.models import HistoricalRecords
 
 from .validators import validate_pdf
-from definitions.models import Description, UnitType, Product
+from definitions.models import Description, UnitType, Product, CashType
 
 # Create your models here.
 class Customer(models.Model):
@@ -111,3 +111,25 @@ class QuotationLine(models.Model):
     quantity = models.DecimalField(max_digits=15, decimal_places=5, default=0.00)
     total_value = models.DecimalField(max_digits=15, decimal_places=5, default=0.00)
 
+
+class QuotationTransaction(models.Model):
+    quotation = models.ForeignKey(Quotation, on_delete=models.CASCADE)
+    cash_type = models.ForeignKey(CashType, on_delete=models.PROTECT)
+    amount = models.DecimalField(max_digits=15, decimal_places=5, default=0.00)
+    transaction_date = models.DateTimeField(default=timezone.now)
+    description = models.CharField(max_length=200, blank=True, null=True)
+    due_date = models.DateField(blank=True, null=True)
+    paid = models.BooleanField(default=False, verbose_name=_('Paid'))
+    payment_date = models.DateField(blank=True, null=True)
+
+    creation_date = models.DateTimeField(auto_now_add=True)
+    modified_date = models.DateTimeField(auto_now=True)
+    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='quotation_transaction_created_by',
+                                   verbose_name=_('Created By'), blank=True, null=True)
+    updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='quotation_transaction_updated_by',
+                                   verbose_name=_('Updated By'), blank=True, null=True)
+    
+    history = HistoricalRecords()
+
+    def __str__(self):
+        return f'{self.id}'

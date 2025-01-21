@@ -30,6 +30,16 @@ class QuotationLineDetailedSerializer(serializers.ModelSerializer):
         extra_fields = ['description_name']
 
 
+class QuotationLineDetailedUnitSerializer(serializers.ModelSerializer):
+    description_name = serializers.CharField(source='description.name', read_only=True)
+    unit_name = serializers.CharField(source='unit_type.description', read_only=True)
+
+    class Meta:
+        model = QuotationLine
+        fields = '__all__'
+        extra_fields = ['description_name', 'unit_name']
+
+
 class QuotationSerializer(serializers.ModelSerializer):
     lines = QuotationLineDetailedSerializer(many=True, read_only=True)
 
