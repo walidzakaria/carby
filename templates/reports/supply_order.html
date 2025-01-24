@@ -141,7 +141,7 @@
       </thead>
       
       {% for row in rows %}
-        <td>{{ row.description }}</td>
+        <td>{{ row.description }} {% if row.country %}({{ row.country }}){% endif %}</td>
         <td dir="ltr">{{ row.quantity }}</td>
         <td>{{ row.unit }}</td>
         <td dir="ltr">{{ row.unit_value }}</td>

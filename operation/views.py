@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
-from .models import Customer, Vendor, Quotation, QuotationLine
-from .serializers import CustomerSerializer, VendorSerializer, QuotationSerializer
+from .models import Customer, Vendor, Quotation, QuotationLine, Stock
+from .serializers import CustomerSerializer, VendorSerializer, QuotationSerializer, StockSerializer
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
@@ -24,6 +24,13 @@ class VendorViewSet(viewsets.ModelViewSet):
     permission_classes = [HasModelPermissionOrAdmin]
     queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
+
+
+class StockViewSet(viewsets.ModelViewSet):
+    permission_classes = [HasModelPermissionOrAdmin]
+    queryset = Stock.objects.all()
+    serializer_class = StockSerializer
+
 
 class QuotationViewSet(viewsets.ModelViewSet):
     # permission_classes = [HasModelPermissionOrAdmin]

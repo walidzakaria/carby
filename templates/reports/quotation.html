@@ -144,13 +144,27 @@
         </tr>
       </thead>
 
-      {% for row in rows %}
-      
-        <td>{{ row.description_name }}</td>
+      {% for row in rows %}        
+        {% if label == 'a' %}
+        <td>{{ row.description_name }} {% if row.country_a %}({{ row.country_a }}){% endif %}</td>
         <td dir="ltr">{{ row.quotation_quantity|format_number }}</td>
         <td>{{ row.unit_name }}</td>
-        <td dir="ltr">{{ row.unit_value|format_number }}</td>
-        <td dir="ltr">{{ row.quotation_total_value|format_number }}</td>
+        <td dir="ltr">{{ row.unit_value_a|format_number }}</td>
+        <td dir="ltr">{{ row.quotation_total_value_a|format_number }}</td>
+        {% elif label == 'b' %}
+        <td>{{ row.description_name }} {% if row.country_b %}({{ row.country_b }}){% endif %}</td>
+        <td dir="ltr">{{ row.quotation_quantity|format_number }}</td>
+        <td>{{ row.unit_name }}</td>
+        <td dir="ltr">{{ row.unit_value_b|format_number }}</td>
+        <td dir="ltr">{{ row.quotation_total_value_b|format_number }}</td>
+        {% elif label == 'c' %}
+        <td>{{ row.description_name }} {% if row.country_c %}({{ row.country_c }}){% endif %}</td>
+        <td dir="ltr">{{ row.quotation_quantity|format_number }}</td>
+        <td>{{ row.unit_name }}</td>
+        <td dir="ltr">{{ row.unit_value_c|format_number }}</td>
+        <td dir="ltr">{{ row.quotation_total_value_c|format_number }}</td>
+
+        {% endif %}
       </tr>
       {% endfor %}
       

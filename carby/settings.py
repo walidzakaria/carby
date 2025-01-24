@@ -38,9 +38,9 @@ LOCAL = config.getboolean('App', 'LOCAL')
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    '206.81.17.38',
-    'planetgeneralsupplies.com',
-    'www.planetgeneralsupplies.com',
+    '165.227.162.252',
+    'planet-corp.com',
+    'www.planet-corp.com',
 ]
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
@@ -50,25 +50,25 @@ CORS_ORIGIN_WHITELIST = (
     'http://127.0.0.1:8000',
     'http://127.0.0.1:9000',
     'http://127.0.0.1:8080',
-    'http://206.81.17.38:8000',
-    'http://206.81.17.38',
-    'http://planetgeneralsupplies.com',
-    'http://www.planetgeneralsupplies.com',
-    'https://planetgeneralsupplies.com',
-    'https://www.planetgeneralsupplies.com',
+    'http://165.227.162.252:8000',
+    'http://165.227.162.252',
+    'http://planet-corp.com',
+    'http://www.planet-corp.com',
+    'https://planet-corp.com',
+    'https://www.planet-corp.com',
 )
 
 CSRF_TRUSTED_ORIGINS = [
-    'http://206.81.17.38',
+    'http://165.227.162.252',
     'http://localhost',
     'http://127.0.0.1',
-    'http://planetgeneralsupplies.com',
-    'http://www.planetgeneralsupplies.com',
-    'https://planetgeneralsupplies.com',
-    'https://www.planetgeneralsupplies.com',
+    'http://planet-corp.com',
+    'http://www.planet-corp.com',
+    'https://planet-corp.com',
+    'https://www.planet-corp.com',
 ]
 
-BASE_URL = 'https://planetgeneralsupplies.com'
+BASE_URL = 'https://planet-corp.com'
 SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 # CSRF_COOKIE_SECURE = False  # Set to True if using HTTPS
 
@@ -229,12 +229,12 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:9000",
     "http://127.0.0.1:9000",
-    'http://206.81.17.38',
-    'http://206.81.17.38:8000',
-    'http://planetgeneralsupplies.com',
-    'http://www.planetgeneralsupplies.com',
-    'https://planetgeneralsupplies.com',
-    'https://www.planetgeneralsupplies.com',
+    'http://165.227.162.252',
+    'http://165.227.162.252:8000',
+    'http://planet-corp.com',
+    'http://www.planet-corp.com',
+    'https://planet-corp.com',
+    'https://www.planet-corp.com',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True

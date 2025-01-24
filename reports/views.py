@@ -12,6 +12,7 @@ from datetime import datetime, time
 
 from operation.models import Vendor, Quotation, QuotationLine
 from operation.serializers import QuotationLineDetailedUnitSerializer
+from definitions.models import Country
 
 class SupplyOrdersView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -23,14 +24,17 @@ class SupplyOrdersView(APIView):
 
         with connection.cursor() as cursor:
             query = '''
-                select
-                    de.name as description, ql.quantity, ut.description as unit, ql.unit_value, ql.quantity * ql.unit_value as value
-                from
-                    operation_quotationline ql
-                    join definitions_description de on ql.description_id = de.id
-                    join definitions_unittype ut on ql.unit_type_id = ut.id
-                where
-                    ql.quantity != 0 and ql.quotation_id = %s and ql.vendor_id = %s;
+                SELECT de. name AS description,
+                    co.name country,
+                    ql.quantity,
+                    ut.description AS unit,
+                    ql.unit_value,
+                    ql.quantity * ql.unit_value AS value
+                FROM operation_quotationline ql
+                JOIN definitions_description de ON ql.description_id = de.id
+                LEFT JOIN definitions_country co ON ql.country_a_id = co.id
+                JOIN definitions_unittype ut ON ql.unit_type_id = ut.id
+                WHERE ql.quantity != 0 and ql.quotation_id = %s and ql.vendor_id = %s;
             '''
             cursor.execute(query, [quotation_id, vendor])
             columns = [col[0] for col in cursor.description]
@@ -38,10 +42,11 @@ class SupplyOrdersView(APIView):
             
             row_data = [{
                 'description': row[0],
-                'quantity': row[1],
-                'unit': row[2],
-                'unit_value': row[3],
-                'value': row[4],
+                'country': row[1],
+                'quantity': row[2],
+                'unit': row[3],
+                'unit_value': row[4],
+                'value': row[5],
             } for row in rows]
             
             selected_vendor = Vendor.objects.get(pk=vendor)
@@ -66,6 +71,7 @@ class QuotationOrdersView(APIView):
 
         quotation_id = request.query_params.get('quotation_id')
         show_template = request.query_params.get('show_template', 'false').lower() == 'true'
+        label = request.query_params.get('label', 'a')
 
         quotation = Quotation.objects.get(pk=quotation_id)
         quotation_lines = QuotationLine.objects.filter(quotation=quotation)
@@ -75,18 +81,24 @@ class QuotationOrdersView(APIView):
             'T1': 'ضريبة القيمة المضافة',
             'T2': 'ضريبة الجدول',
         }
+        net_amount, total_amount = {
+            'a': (quotation.quotation_net_amount_a, quotation.quotation_total_amount_a),
+            'b': (quotation.quotation_net_amount_b, quotation.quotation_total_amount_b),
+            'c': (quotation.quotation_net_amount_c, quotation.quotation_total_amount_c),
+        }[label]
         context = {
+            'label': label,
             'customer': quotation.customer.name,
             'code': quotation_id,
             'date': quotation.date_time_issued.strftime("%Y-%m-%d"),
             'rows': row_data,
             'conditions': quotation.conditions,
-            'net_amount': f"{quotation.quotation_net_amount:,.2f}",
+            'net_amount': f"{net_amount:,.2f}",
             'tax': tax_dict[quotation.tax],
             'tax_amount': f"{quotation.tax_amount:,.2f}",
-            'total_amount': f"{quotation.quotation_total_amount:,.2f}",
+            'total_amount': f"{(total_amount):,.2f}",
             'show_template': show_template,
         }
-            
+    
         response = render(request, 'reports/quotation.html', context=context)
         return response

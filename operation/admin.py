@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Customer, Quotation, QuotationLine, Vendor, QuotationTransaction
+from .models import Customer, Quotation, QuotationLine, Vendor, QuotationTransaction, Stock
 
 
 # Register your models here.
@@ -48,6 +48,18 @@ class VendorAdmin(admin.ModelAdmin):
             obj.created_by = request.user
         obj.updated_by = request.user
         return super().save_model(request, obj, form, change)
+
+
+@admin.register(Stock)
+class StockAdmin(admin.ModelAdmin):
+    list_display = ('id', 'product', 'description', 'quantity', 'unit_type', 'unit_value', 'total_value', )
+    search_fields = ('product__name', 'description__name', )
+    readonly_fields = ('creation_date', 'modified_date', 'created_by', 'updated_by', )
+    
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            obj.created_by = request.user
+        obj.updated_by = request.user
 
 
 @admin.register(QuotationTransaction)

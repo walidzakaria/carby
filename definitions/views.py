@@ -2,8 +2,11 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Product, Description, UnitType, Condition
-from .serializers import ProductSerializer, DescriptionSerializer, UnitTypeSerializer, ProductDetailedSerializer, ConditionSerializer
+from .models import Product, Description, UnitType, Condition, BankAccount, Country
+from .serializers import (
+    ProductSerializer, DescriptionSerializer, UnitTypeSerializer, ProductDetailedSerializer, ConditionSerializer,
+    BankAccountSerializer, CountrySerializer,
+)
 from users.permissions import HasModelPermissionOrAdmin
 from rest_framework.permissions import IsAuthenticated
 
@@ -102,3 +105,15 @@ class ConditionViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = Condition.objects.all()
     serializer_class = ConditionSerializer
+
+
+class BankAccountViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = BankAccount.objects.all()
+    serializer_class = BankAccountSerializer
+
+
+class CountryViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = Country.objects.all()
+    serializer_class = CountrySerializer

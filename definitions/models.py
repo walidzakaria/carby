@@ -40,6 +40,19 @@ class Condition(models.Model):
         return self.name
 
 
+class BankAccount(models.Model):
+    account_name = models.CharField(max_length=100)
+    bank_name = models.CharField(max_length=100)
+    account_number = models.CharField(max_length=20)
+    
+    
+    def __str__(self):
+        return self.account_name
+    
+    class Meta:
+        ordering = ('account_name', )
+
+
 class CashType(models.Model):
     
     class CashCategoryType(models.TextChoices):
@@ -57,3 +70,15 @@ class CashType(models.Model):
     
     def __str__(self):
         return self.description
+
+
+class Country(models.Model):
+    name = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ('name', )
+        verbose_name_plural = 'Countries'
+    
