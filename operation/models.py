@@ -100,8 +100,6 @@ class Quotation(models.Model):
                                    verbose_name=_('Created By'), blank=True, null=True)
     updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='quotation_updated_by',
                                    verbose_name=_('Updated By'), blank=True, null=True)
-    supply_order = models.FileField(upload_to='supply_order/', validators=[validate_pdf],
-                                    blank=True, null=True)
     po_number = models.CharField(max_length=20, blank=True, null=True)
     bank_account = models.ForeignKey(BankAccount, on_delete=models.PROTECT, blank=True, null=True)
     conditions = models.TextField(max_length=2000, blank=True, null=True)
@@ -124,6 +122,15 @@ class Quotation(models.Model):
 
     def __str__(self):
         return f'{self.id}'
+    
+    def get_number(self, file_type):
+        last_attachment = QuotationAttachment.objects.filter(
+            quotation=self, file_type=file_type
+        ).last()
+        
+        if last_attachment:
+            return last_attachment.file_number + 1
+        return 1
     
 
 class QuotationLine(models.Model):
@@ -198,3 +205,28 @@ class QuotationTransaction(models.Model):
 
     def __str__(self):
         return f'{self.id}'
+
+
+class QuotationAttachment(models.Model):
+    
+    class FileType(models.TextChoices):
+        CONDITIONS = 'CONDITIONS', _('كراسة شروط')
+        SUPPLY_ORDER = 'SUPPLY_ORDER', _('امر توريد')
+        PAYMENT_ORDER = 'PAYMENT_ORDER', _('امر دفع')
+        OTHER = 'OTHER', _('اخرى')
+    
+    quotation = models.ForeignKey(Quotation, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='quotation/attachment/', validators=[validate_pdf])
+    file_type = models.CharField(max_length=15, choices=FileType.choices, default=FileType.OTHER)
+    file_name = models.CharField(max_length=100, blank=True, null=True)
+    file_number = models.PositiveSmallIntegerField(default=1)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.id}'
+    
+
+    class Meta:
+        verbose_name = _('Quotation Attachment')
+        verbose_name_plural = _('Quotation Attachments')
+

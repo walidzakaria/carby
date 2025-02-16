@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Customer, Vendor, Quotation, QuotationLine, Stock
+from .models import Customer, Vendor, Quotation, QuotationLine, Stock, QuotationAttachment
 from definitions.models import Description
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -60,4 +60,10 @@ class QuotationSearchSerizalizer(serializers.ModelSerializer):
 class StockSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stock
+        fields = '__all__'
+
+
+class QuotationAttachmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuotationAttachment
         fields = '__all__'

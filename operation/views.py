@@ -1,7 +1,7 @@
 from django.shortcuts import render
-
-from .models import Customer, Vendor, Quotation, QuotationLine, Stock
-from .serializers import CustomerSerializer, VendorSerializer, QuotationSerializer, StockSerializer
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, DjangoObjectPermissions, AllowAny
+from .models import Customer, Vendor, Quotation, QuotationLine, Stock, QuotationAttachment
+from .serializers import CustomerSerializer, VendorSerializer, QuotationSerializer, StockSerializer, QuotationAttachmentSerializer
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
@@ -34,6 +34,7 @@ class StockViewSet(viewsets.ModelViewSet):
 
 class QuotationViewSet(viewsets.ModelViewSet):
     # permission_classes = [HasModelPermissionOrAdmin]
+    permission_classes = [IsAuthenticated]
     queryset = Quotation.objects.all()
     serializer_class = QuotationSerializer
 
@@ -102,18 +103,18 @@ class QuotationViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         return Response(line_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-    @action(detail=True, methods=['post'], url_path='upload-supply-order')
-    def upload_supply_order(self, request, pk=None):
-        quotation = self.get_object()
-        supply_order = request.FILES.get('supply_order')
+    # @action(detail=True, methods=['post'], url_path='upload-supply-order')
+    # def upload_supply_order(self, request, pk=None):
+    #     quotation = self.get_object()
+    #     supply_order = request.FILES.get('supply_order')
 
-        if not supply_order:
-            return Response({'error': 'No supply order file provided'}, status=status.HTTP_400_BAD_REQUEST)
+    #     if not supply_order:
+    #         return Response({'error': 'No supply order file provided'}, status=status.HTTP_400_BAD_REQUEST)
 
-        quotation.supply_order.save(supply_order.name, supply_order)
-        quotation.save()
+    #     quotation.supply_order.save(supply_order.name, supply_order)
+    #     quotation.save()
 
-        return Response({'file': quotation.supply_order.name}, status=status.HTTP_200_OK)
+    #     return Response({'file': quotation.supply_order.name}, status=status.HTTP_200_OK)
 
     
     @action(detail=False, methods=['get'], url_path='search')
@@ -142,4 +143,48 @@ class QuotationViewSet(viewsets.ModelViewSet):
             return paginator.get_paginated_response(serializer.data)
 
         serializer = QuotationSearchSerizalizer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class QuotationAttachmentViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = QuotationAttachment.objects.all()
+    serializer_class = QuotationAttachmentSerializer
+    
+
+    def create(self, request, *args, **kwargs):
+        quotation_id = request.data.get('quotation')
+        file_type = request.data.get('file_type')
+        quotation = Quotation.objects.get(pk=quotation_id)
+        file_number = quotation.get_number(file_type)
+        request.data['file_number'] = file_number
+        return super().create(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        data = request.data.copy()
+        quotation_id = data.get('quotation')
+        file_type = data.get('file_type')
+        
+        instance = self.get_object()
+        if instance.file_type != file_type:
+            quotation = Quotation.objects.get(pk=quotation_id)
+            file_number = quotation.get_number(file_type)
+            data['file_number'] = file_number
+            request._full_data = data
+        
+        if 'file' in request.data and request.data['file'] != instance.file:
+            instance.file.delete()
+        return super().update(request, *args, **kwargs)
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.file.delete()
+        return super().destroy(request, *args, **kwargs)
+    
+    
+
+    @action(detail=True, methods=['get'], url_path='get-by-quotation')
+    def get_by_quotation(self, request, pk=None):
+        queryset = self.get_queryset().filter(quotation=pk)
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
