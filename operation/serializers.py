@@ -1,6 +1,9 @@
 from rest_framework import serializers
 
-from .models import Customer, Vendor, Quotation, QuotationLine, Stock, QuotationAttachment
+from .models import (
+    Customer, Vendor, Quotation, QuotationLine, Stock, QuotationAttachment, QuotationInsurance,
+    # QuotationDelivery, QuotationDeliveryLine
+)
 from definitions.models import Description
 
 class CustomerSerializer(serializers.ModelSerializer):
@@ -67,3 +70,21 @@ class QuotationAttachmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = QuotationAttachment
         fields = '__all__'
+
+
+class QuotationInsuranceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QuotationInsurance
+        fields = '__all__'
+
+
+# class QuotationDeliverySerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = QuotationDelivery
+#         fields = '__all__'
+
+
+# class QuotationDeliveryLineSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = QuotationDeliveryLine
+#         fields = '__all__'

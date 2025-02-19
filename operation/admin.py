@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Customer, Quotation, QuotationLine, Vendor, QuotationTransaction, Stock
+from .models import Customer, Quotation, QuotationLine, Vendor, QuotationTransaction, Stock, QuotationAttachment, QuotationInsurance
 
 
 # Register your models here.
@@ -21,12 +21,19 @@ class QuotationLineTabular(admin.TabularInline):
     model = QuotationLine
     extra = 1
 
+class QuotationAttachmentTabular(admin.TabularInline):
+    model = QuotationAttachment
+    extra = 0
+
+class QuotationInsuranceTabular(admin.TabularInline):
+    model = QuotationInsurance
+    extra = 0
 
 @admin.register(Quotation)
 class QuotationAdmin(admin.ModelAdmin):
     list_display = ('id', 'customer', 'date_time_issued', )
     search_fields = ('customer__name', )
-    inlines = [QuotationLineTabular]
+    inlines = [QuotationLineTabular, QuotationAttachmentTabular, QuotationInsuranceTabular, ]
     readonly_fields = ('creation_date', 'modified_date', 'created_by', 'updated_by', )
     
     def save_model(self, request, obj, form, change):

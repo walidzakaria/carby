@@ -89,6 +89,7 @@ class Quotation(models.Model):
         T1 = 'T1', _('Value added tax')
         T2 = 'T2', _('Table tax (percentage)')
     
+    name = models.CharField(max_length=100, blank=True, null=True)
     status = models.CharField(max_length=15, choices=StatusOption.choices, default=StatusOption.QUOTATION,
                               verbose_name=_('Status'))
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
@@ -230,3 +231,43 @@ class QuotationAttachment(models.Model):
         verbose_name = _('Quotation Attachment')
         verbose_name_plural = _('Quotation Attachments')
 
+
+class QuotationInsurance(models.Model):
+    quotation = models.ForeignKey(Quotation, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=15, decimal_places=2)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    due_date = models.DateField()
+    is_paid = models.BooleanField(default=False)
+    payment_date = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.id} ({self.amount})'
+    
+    class Meta:
+        verbose_name = _('Quotation Insurance')
+        verbose_name_plural = _('Quotation Insurances')
+
+
+# class QuotationDelivery(models.Model):
+#     quotation = models.ForeignKey(Quotation, on_delete=models.CASCADE)
+#     creation_date = models.DateTimeField(auto_now_add=True)
+#     modified_date = models.DateTimeField(auto_now=True)
+#     created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='quotation_delivery_created_by',
+#                                    verbose_name=_('Created By'), blank=True, null=True)
+#     updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='quotation_delivery_updated_by',
+#                                    verbose_name=_('Updated By'), blank=True, null=True)
+
+#     def __str__(self):
+#         return f'{self.id}'
+
+#     class Meta:
+#         verbose_name = _('Quotation Delivery')
+#         verbose_name_plural = _('Quotation Deliveries')
+
+
+# class QuotationDeliveryLine(models.Model):
+#     quotation = models.ForeignKey(Quotation, on_delete=models.CASCADE)
+#     quotation_line = models.ForeignKey(QuotationLine, on_delete=models.CASCADE)
+
+#     def __str__(self):
+#         return f'{self.id}'

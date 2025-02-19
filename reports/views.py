@@ -90,6 +90,7 @@ class QuotationOrdersView(APIView):
             'label': label,
             'customer': quotation.customer.name,
             'code': quotation_id,
+            'name': quotation.name,
             'date': quotation.date_time_issued.strftime("%Y-%m-%d"),
             'rows': row_data,
             'conditions': quotation.conditions,

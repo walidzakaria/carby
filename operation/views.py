@@ -1,7 +1,14 @@
 from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, DjangoObjectPermissions, AllowAny
-from .models import Customer, Vendor, Quotation, QuotationLine, Stock, QuotationAttachment
-from .serializers import CustomerSerializer, VendorSerializer, QuotationSerializer, StockSerializer, QuotationAttachmentSerializer
+from .models import (
+    Customer, Vendor, Quotation, QuotationLine, Stock, QuotationAttachment, QuotationInsurance,
+    # QuotationDelivery, QuotationDeliveryLine
+)
+from .serializers import (
+    CustomerSerializer, VendorSerializer, QuotationSerializer, StockSerializer, QuotationAttachmentSerializer,
+    QuotationInsuranceSerializer,
+    # QuotationDeliverySerializer, QuotationDeliveryLineSerializer
+)
 from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.response import Response
@@ -182,6 +189,19 @@ class QuotationAttachmentViewSet(viewsets.ModelViewSet):
         return super().destroy(request, *args, **kwargs)
     
     
+
+    @action(detail=True, methods=['get'], url_path='get-by-quotation')
+    def get_by_quotation(self, request, pk=None):
+        queryset = self.get_queryset().filter(quotation=pk)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+
+class QuotationInsuranceViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
+    queryset = QuotationInsurance.objects.all()
+    serializer_class = QuotationInsuranceSerializer
 
     @action(detail=True, methods=['get'], url_path='get-by-quotation')
     def get_by_quotation(self, request, pk=None):
