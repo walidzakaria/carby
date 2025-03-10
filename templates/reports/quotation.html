@@ -15,7 +15,7 @@
       text-align: right;
       print-color-adjust: {{ show_template|yesno:'exact,unset' }};
       -webkit-print-color-adjust: {{ show_template|yesno:'exact,unset' }};
-      font-size: 14px;
+      font-size: 12px;
       padding: 0;
       max-width: 900px;
       margin: 0 auto;
@@ -44,13 +44,13 @@
     }
 
     .main-table th {
-      padding: 15px 5px;
+      padding: 6px 5px;
       border-bottom: 1px solid black;
       border-top: 1px solid black;
     }
 
     .main-table td {
-      padding: 8px 5px;
+      padding: 2px 5px;
     }
 
     .sub-row {
@@ -70,7 +70,7 @@
       width: 100%;
     }
     .ending-label {
-      padding: 20px;
+      padding: 5px;
       border-radius: 6px;
       background-color: rgb(226, 231, 238);;
       max-width: 300px;
@@ -83,7 +83,7 @@
     }
     @media print {
       body {
-        padding: 20px;
+        padding: 10px;
         max-width: 100%;
         margin: 30px;
       }
@@ -94,7 +94,7 @@
     }
 
     .conditions ul {
-      font-size: 15px;
+      font-size: 11px;
     }
   </style>
 </head>
@@ -123,12 +123,12 @@
 
   </table>
   {% if not show_template %}
-  <h1 style="margin-top: -80px; text-align: center; font-size: 18px;">عرض سعر</h1>
+  <h1 style="margin-top: -100px; text-align: center; font-size: 18px;">عرض سعر</h1>
   <h2 style="margin-top: -10px; text-align: center; font-size: 18px; font-weight: normal;">{{ name }}</h2>
   {% endif %}
   
   <br>
-  <table style="border-collapse: collapse; font-size: 17px;" class="full-width">
+  <table style="border-collapse: collapse; font-size: 12px;" class="full-width">
     <tr><th width="100px"></th><th></th></td>
     <tr>
       <td>اسم العميل:</td>
