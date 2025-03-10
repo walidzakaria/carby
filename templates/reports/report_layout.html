@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Printable Report with Page Numbers</title>
+    <style>
+      /* Set page size and margins */
+      @page {
+        size: A4;
+        margin: 2cm;
+
+        /* Define the footer with page numbers */
+        @bottom-center {
+          content: "Page " counter(page) " of " counter(pages);
+        }
+      }
+
+      /* General styles */
+      body {
+        font-family: Arial, sans-serif;
+      }
+
+      /* Report header (appears once at the beginning) */
+      .report-header {
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+      }
+
+      /* Report footer (appears once at the end) */
+      .report-footer {
+        text-align: center;
+        font-size: 14px;
+        margin-top: 20px;
+        page-break-before: always;
+      }
+
+      /* Page header (repeats on every printed page) */
+      .page-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 16px;
+        padding: 10px;
+        background-color: #ddd;
+      }
+
+      /* Page footer (repeats on every printed page) */
+      .page-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        text-align: center;
+        font-size: 14px;
+        padding: 10px;
+        background-color: #ddd;
+      }
+
+      /* Page number (modern browsers supporting @bottom-center) */
+      .page-number {
+        display: none; /* Hidden for browsers that support @bottom-center */
+      }
+
+      /* Page number (Fallback for browsers that do not support @bottom-center) */
+      @media print {
+        .page-header,
+        .page-footer {
+          display: block;
+        }
+
+        .no-print {
+          display: none;
+        }
+
+        /* Fallback for page numbers */
+        .page-number::after {
+          content: "Page " counter(page) " of " counter(pages);
+        }
+
+        thead {
+          display: table-header-group; /* Makes table headers repeat */
+        }
+
+        tfoot {
+          display: table-row-group; /* Ensures footer stays at the bottom */
+        }
+
+        .no-break {
+          page-break-inside: avoid; /* Prevents totals section from breaking between pages */
+        }
+      }
+
+      /* Force page breaks */
+      .page-break {
+        page-break-before: always;
+      }
+
+      /* Basic Table Styling */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+      }
+
+      thead {
+        background-color: #f2f2f2;
+      }
+
+      /* Total section styling */
+      .totals {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Report Header (Appears only once at the beginning) -->
+    <div class="report-header">Printable Report Title</div>
+
+    <!-- Page Header (Repeats on every page) -->
+    <div class="page-header">Page Header - Company Name</div>
+
+    <!-- Report Content -->
+    <div class="report-content">
+      <h1>Sales Report</h1>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Repeat rows to test page breaks -->
+          <tr>
+            <td>Product A</td>
+            <td>5</td>
+            <td>$10</td>
+            <td>$50</td>
+          </tr>
+          <tr>
+            <td>Product B</td>
+            <td>3</td>
+            <td>$15</td>
+            <td>$45</td>
+          </tr>
+          <tr>
+            <td>Product C</td>
+            <td>8</td>
+            <td>$20</td>
+            <td>$160</td>
+          </tr>
+          <tr>
+            <td>Product D</td>
+            <td>2</td>
+            <td>$30</td>
+            <td>$60</td>
+          </tr>
+          <tr>
+            <td>Product E</td>
+            <td>10</td>
+            <td>$12</td>
+            <td>$120</td>
+          </tr>
+          <tr>
+            <td>Product E</td>
+            <td>10</td>
+            <td>$12</td>
+            <td>$120</td>
+          </tr>
+          <tr>
+            <td>Product E</td>
+            <td>10</td>
+            <td>$12</td>
+            <td>$120</td>
+          </tr>
+          <tr>
+            <td>Product E</td>
+            <td>10</td>
+            <td>$12</td>
+            <td>$120</td>
+          </tr>
+          <tr>
+            <td>Product E</td>
+            <td>10</td>
+            <td>$12</td>
+            <td>$120</td>
+          </tr>
+          <tr>
+            <td>Product E</td>
+            <td>10</td>
+            <td>$12</td>
+            <td>$120</td>
+          </tr>
+          <tr>
+            <td>Product E</td>
+            <td>10</td>
+            <td>$12</td>
+            <td>$120</td>
+          </tr>
+          <tr>
+            <td>Product F</td>
+            <td>6</td>
+            <td>$18</td>
+            <td>$108</td>
+          </tr>
+          <tr>
+            <td>Product G</td>
+            <td>4</td>
+            <td>$25</td>
+            <td>$100</td>
+          </tr>
+          <tr>
+            <td>Product H</td>
+            <td>7</td>
+            <td>$22</td>
+            <td>$154</td>
+          </tr>
+          <tr>
+            <td>Product I</td>
+            <td>9</td>
+            <td>$10</td>
+            <td>$90</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3"><strong>Grand Total</strong></td>
+            <td><strong>$887</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <!-- Total Section (should not split across pages) -->
+      <div class="totals no-break">
+        <p>Total Quantity: <strong>54</strong></p>
+        <p>Total Revenue: <strong>$887</strong></p>
+        <p>Report Date: <span id="reportDate"></span></p>
+      </div>
+
+      <div class="page-break"></div>
+      <!-- Forces a new page -->
+
+      <p>Continued content on a new page...</p>
+    </div>
+
+    <!-- Page Footer with Page Number (Repeats on every page) -->
+    <div class="page-footer">
+      <span class="page-number"></span>
+      <!-- Fallback for page numbers -->
+    </div>
+
+    <!-- Report Footer (Appears only once at the end) -->
+    <div class="report-footer">
+      Report generated on: <span id="reportDate"></span>
+    </div>
+
+    <script>
+      // Set the report date dynamically
+      document.getElementById("reportDate").textContent =
+        new Date().toLocaleDateString();
+    </script>
+  </body>
+</html>

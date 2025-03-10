@@ -28,7 +28,7 @@
     }
 
     .header-table tr {
-      background-color: #b0c4de;
+      background-color:rgb(226, 231, 238);
     }
 
     .main-table {
@@ -38,17 +38,23 @@
     }
 
     .main-table thead tr {
-      background-color: #4682b4;
-      color: white;
+      background-color: rgb(226, 231, 238);;
+      color: black;
       text-align: right;
     }
 
     .main-table th {
       padding: 15px 5px;
+      border-bottom: 1px solid black;
+      border-top: 1px solid black;
+    }
+
+    .main-table td {
+      padding: 8px 5px;
     }
 
     .sub-row {
-      background-color: #db7093;
+      background-color:rgb(246, 188, 207);
       border-top: 1px solid black;
       font-weight: bold;
     }
@@ -65,10 +71,11 @@
     }
     .ending-label {
       padding: 20px;
-      border-radius: 10px;
-      background-color: #db7093;
+      border-radius: 6px;
+      background-color: rgb(226, 231, 238);;
       max-width: 300px;
       margin: 0 auto 0 0;
+      border: 1px solid black;
     }
     .ending-label table td {
       text-align: right;
@@ -81,12 +88,9 @@
         margin: 30px;
       }
     }
+    
     td {
       page-break-inside: avoid;
-    }
-
-    .main-table td {
-      padding: 8px 5px;
     }
 
     .conditions ul {
@@ -119,8 +123,8 @@
 
   </table>
   {% if not show_template %}
-  <h1 style="margin: 20px; text-align: center;">بيان أسعار</h1>
-  <h2 style="margin-top: -15px; text-align: center;">{{ name }}</h2>
+  <h1 style="margin-top: -80px; text-align: center; font-size: 18px;">عرض سعر</h1>
+  <h2 style="margin-top: -10px; text-align: center; font-size: 18px; font-weight: normal;">{{ name }}</h2>
   {% endif %}
   
   <br>
@@ -179,12 +183,8 @@
           <td dir="ltr"><b>{{ net_amount }}</b></td>
         </tr>
         <tr>
-          <td>الضريبة:</td>
-          <td dir="ltr"><b>{{ tax }}</b></td>
-        </tr>
-        <tr>
-          <td>قيمة الضريبة:</td>
-          <td dir="ltr"><b>{{ tax_amount }}%</b></td>
+          <td>{{ tax }} (<b>{{ tax_amount }}%</b>):</td>
+          <td dir="ltr"><b>{{ tax_value }}</b></td>
         </tr>
         <tr>
           <td>المبلغ الكلي بعد الضريبة:</td>

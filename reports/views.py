@@ -96,7 +96,8 @@ class QuotationOrdersView(APIView):
             'conditions': quotation.conditions,
             'net_amount': f"{net_amount:,.2f}",
             'tax': tax_dict[quotation.tax],
-            'tax_amount': f"{quotation.tax_amount:,.2f}",
+            'tax_amount': f"{quotation.tax_amount:.0f}" if int(quotation.tax_amount) == quotation.tax_amount else f"{quotation.tax_amount:.2f}",
+            'tax_value': f"{(quotation.tax_amount * (net_amount / 100)):,.2f}",
             'total_amount': f"{(total_amount):,.2f}",
             'show_template': show_template,
         }
