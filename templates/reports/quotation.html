@@ -44,13 +44,13 @@
     }
 
     .main-table th {
-      padding: 6px 5px;
+      padding: 5px;
       border-bottom: 1px solid black;
       border-top: 1px solid black;
     }
 
     .main-table td {
-      padding: 2px 5px;
+      padding: 1.5px 5px;
     }
 
     .sub-row {
@@ -79,7 +79,7 @@
     }
     .ending-label table td {
       text-align: right;
-      padding: 5px;
+      padding: 0 5px;
     }
     @media print {
       body {
@@ -123,8 +123,7 @@
 
   </table>
   {% if not show_template %}
-  <h1 style="margin-top: -100px; text-align: center; font-size: 18px;">عرض سعر</h1>
-  <h2 style="margin-top: -10px; text-align: center; font-size: 18px; font-weight: normal;">{{ name }}</h2>
+  <h1 style="margin-top: -60px; text-align: center; font-size: 18px;">عرض سعر</h1>
   {% endif %}
   
   <br>
@@ -132,10 +131,13 @@
     <tr><th width="100px"></th><th></th></td>
     <tr>
       <td>اسم العميل:</td>
-      <td><b>{{ customer }}</b</td>
+      <td><b>{{ customer }}</b></td>
+      <td rowspan="3" style="text-align: center; font-size: 15px;"><b>(  {{ name }}  )</b></td>
     </tr>
-    <tr><td>رقم المستند:</td><td><b>{{ code }}</b></td></tr>
-    <tr><td>التاريخ:</td><td><b>{{ date }}</b></td></tr>
+    <tr><td>رقم المستند:</td><td><b>{{ code }}</b></td>
+      </tr>
+    <tr><td>التاريخ:</td><td><b>{{ date }}</b></td>
+    </tr>
   </table>
   <div>
     <br>
@@ -195,7 +197,7 @@
     <br />
   </div>
   <div class="full-width conditions">
-    <h3>الشروط والأحكام:</h3>
+    <h3 style="margin-top: 0; margin-bottom: -8px;">الشروط والأحكام:</h3>
     {{ conditions|safe }}
   </div>
   <hr class="full-width ending-line" />
