@@ -72,6 +72,7 @@ class QuotationOrdersView(APIView):
         quotation_id = request.query_params.get('quotation_id')
         show_template = request.query_params.get('show_template', 'false').lower() == 'true'
         label = request.query_params.get('label', 'a')
+        document_label = request.query_params.get('document_label', 'a')
 
         quotation = Quotation.objects.get(pk=quotation_id)
         quotation_lines = QuotationLine.objects.filter(quotation=quotation)
@@ -102,5 +103,5 @@ class QuotationOrdersView(APIView):
             'show_template': show_template,
         }
     
-        response = render(request, 'reports/quotation.html', context=context)
+        response = render(request, f'reports/quotation_{document_label}.html', context=context)
         return response

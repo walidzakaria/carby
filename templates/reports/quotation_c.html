@@ -1,0 +1,183 @@
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    .full-width {
+      width: 100%;
+      margin: 0 auto;
+    }
+    body {
+      font-family: "Tajawal", "Arial", sans-serif;
+      direction: rtl;
+      text-align: right;
+      print-color-adjust: {{ show_template|yesno:'exact,unset' }};
+      -webkit-print-color-adjust: {{ show_template|yesno:'exact,unset' }};
+      font-size: 14px;
+      padding: 0;
+      max-width: 850px;
+      margin: 0 auto;
+      background-color: #f8f9fa;
+    }
+
+    .header-table {
+      border-collapse: collapse;
+      width: 100%;
+      background-color: #e9ecef;
+      padding: 2px;
+    }
+
+    .main-table {
+      border-collapse: collapse;
+      width: 100%;
+      border: 1px solid #dee2e6;
+      background-color: white;
+      text-align: center;
+    }
+
+    .main-table thead tr {
+      background-color: #343a40;
+      color: white;
+      text-align: center;
+    }
+
+    .main-table th, .main-table td {
+      padding: 3px;
+      border: 1px solid #dee2e6;
+    }
+
+    .main-table td {
+      padding: 0 4px;
+    }
+
+    .total-table thead tr {
+      background-color: #495057;
+      color: white;
+    }
+
+    .ending-label {
+      padding: 0 10px;
+      border-radius: 8px;
+      background-color: #e9ecef;
+      max-width: 350px;
+      margin: 0 auto;
+      border: 1px solid #6c757d;
+    }
+    .ending-label table td {
+      text-align: right;
+      padding: 0 5px;
+    }
+
+    @media print {
+      body {
+        padding: 10px;
+        max-width: 100%;
+        margin: 30px;
+        background-color: white;
+      }
+    }
+    
+    td {
+      page-break-inside: avoid;
+    }
+
+    .conditions ul {
+      font-size: 13px;
+    }
+  </style>
+
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+  {% if not show_template %}
+  <h1 style="margin-top: 55px; text-align: center; font-size: 20px; font-weight: bold; color: #343a40;">بيان أسعار</h1>
+  {% endif %}
+  
+  <br>
+  <table class="header-table">
+    <tr>
+      <td>اسم العميل:</td>
+      <td><b>{{ customer }}</b></td>
+      <td rowspan="3" style="text-align: center; font-size: 16px;"><b>{% if name %}(  {{ name }}  ){% endif %}</b></td>
+    </tr>
+    <tr>
+      <td>رقم المستند:</td>
+      <td><b>{{ code }}</b></td>
+    </tr>
+    <tr>
+      <td>التاريخ:</td>
+      <td><b>{{ date }}</b></td>
+    </tr>
+  </table>
+  <div>
+    <br>
+    <table class="main-table full-width">
+      <thead>
+        <tr>
+          <th>اسم الصنف</th>
+          <th>الكمية</th>
+          <th>الوحدة</th>
+          <th>سعر الوحدة</th>
+          <th>القيمة</th>
+        </tr>
+      </thead>
+
+      {% for row in rows %}        
+        {% if label == 'a' %}
+        <tr>
+          <td>{{ row.description_name }} {% if row.country_a %}({{ row.country_a }}){% endif %}</td>
+          <td dir="ltr">{{ row.quotation_quantity|format_number }}</td>
+          <td>{{ row.unit_name }}</td>
+          <td dir="ltr">{{ row.sales_price_a|format_number }}</td>
+          <td dir="ltr">{{ row.quotation_total_value_a|format_number }}</td>
+        </tr>
+        {% elif label == 'b' %}
+        <tr>
+          <td>{{ row.description_name }} {% if row.country_b %}({{ row.country_b }}){% endif %}</td>
+          <td dir="ltr">{{ row.quotation_quantity|format_number }}</td>
+          <td>{{ row.unit_name }}</td>
+          <td dir="ltr">{{ row.sales_price_b|format_number }}</td>
+          <td dir="ltr">{{ row.quotation_total_value_b|format_number }}</td>
+        </tr>
+        {% elif label == 'c' %}
+        <tr>
+          <td>{{ row.description_name }} {% if row.country_c %}({{ row.country_c }}){% endif %}</td>
+          <td dir="ltr">{{ row.quotation_quantity|format_number }}</td>
+          <td>{{ row.unit_name }}</td>
+          <td dir="ltr">{{ row.sales_price_c|format_number }}</td>
+          <td dir="ltr">{{ row.quotation_total_value_c|format_number }}</td>
+        </tr>
+        {% endif %}
+      {% endfor %}
+    </table>
+    <br />
+    <div class="ending-label">
+      <table>
+        <tr>
+          <td>المبلغ الكلي:</td>
+          <td dir="ltr"><b>{{ net_amount }}</b></td>
+        </tr>
+        <tr>
+          <td>{{ tax }} (<b>{{ tax_amount }}%</b>):</td>
+          <td dir="ltr"><b>{{ tax_value }}</b></td>
+        </tr>
+        <tr>
+          <td>المبلغ الكلي بعد الضريبة:</td>
+          <td dir="ltr"><b>{{ total_amount }}</b></td>
+        </tr>
+      </table>
+    </div>
+    <br />
+  </div>
+  <div class="full-width conditions">
+    <h3 style="margin-top: -10px; margin-bottom: -8px; color: #495057;">الشروط والأحكام:</h3>
+    {{ conditions|safe }}
+  </div>
+  <hr class="full-width ending-line" />
+  <br>
+</body>
+</html>

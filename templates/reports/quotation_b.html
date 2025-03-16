@@ -1,0 +1,250 @@
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif; /* Modern Arabic font */
+      direction: rtl;
+      text-align: right;
+      background-color: #f9fafb;
+      color: #333;
+      padding: 0;
+      max-width: 900px;
+      margin: 0 auto;
+      font-size: 12px;
+    }
+
+    h1 {
+      font-size: 20px;
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 10px;
+      margin-top: 55px;
+    }
+
+    .header-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 5px;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-table td {
+      padding: 1px 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .header-table td:first-child {
+      font-weight: normal;
+      color: #555;
+    }
+
+    .main-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 10px;
+    }
+
+    .main-table th,
+    .main-table td {
+      padding: 0 10px;
+      text-align: right;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .main-table th {
+      padding: 3px 10px;
+      background-color: #34495e;
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    .main-table tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+
+    .main-table tr:hover {
+      background-color: #e9ecef;
+    }
+
+    .sub-row {
+      background-color: #f8d7da;
+      font-weight: bold;
+    }
+
+    .total-table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 10px;
+    }
+
+    .total-table td {
+      padding: 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .total-table td:first-child {
+      color: #555;
+    }
+
+    .ending-label {
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 2px 5px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 10px;
+    }
+
+    .ending-label table {
+      width: 100%;
+    }
+
+    .ending-label td {
+      padding: 0 8px;
+      text-align: right;
+    }
+
+    .ending-label td:first-child {
+      color: #555;
+    }
+
+    .conditions {
+      background-color: #ffffff;
+      border-radius: 8px;
+      padding: 2px 10px 5px 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .conditions h3 {
+      font-size: 15px;
+      color: #2c3e50;
+      margin: 0;
+    }
+
+    .conditions ul {
+      list-style-type: disc;
+      padding-right: 20px;
+      font-size: 12px;
+      color: #555;
+      margin: 0;
+    }
+
+    .ending-line {
+      border: 1px solid #e0e0e0;
+      margin: 10px 0;
+    }
+
+    @media print {
+      body {
+        padding: 10px;
+        max-width: 100%;
+        margin: 30px;
+      }
+
+      .header-table,
+      .main-table,
+      .total-table,
+      .ending-label,
+      .conditions {
+        box-shadow: none;
+        border: 1px solid #e0e0e0;
+      }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  {% if not show_template %}
+  <h1>عرض سعر</h1>
+  {% endif %}
+
+  <table class="header-table">
+    <tr>
+      <td>اسم العميل:</td>
+      <td><b>{{ customer }}</b></td>
+      <td rowspan="3" style="text-align: center; font-size: 15px;"><b>{% if name %}(  {{ name }}  ){% endif %}</b></td>
+    </tr>
+    <tr>
+      <td>رقم المستند:</td>
+      <td><b>{{ code }}</b></td>
+    </tr>
+    <tr>
+      <td>التاريخ:</td>
+      <td><b>{{ date }}</b></td>
+    </tr>
+  </table>
+
+  <table class="main-table">
+    <thead>
+      <tr>
+        <th>اسم الصنف</th>
+        <th>الكمية</th>
+        <th>الوحدة</th>
+        <th>سعر الوحدة</th>
+        <th>القيمة</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        {% if label == 'a' %}
+        <td>{{ row.description_name }} {% if row.country_a %}({{ row.country_a }}){% endif %}</td>
+        <td dir="ltr">{{ row.quotation_quantity|format_number }}</td>
+        <td>{{ row.unit_name }}</td>
+        <td dir="ltr">{{ row.sales_price_a|format_number }}</td>
+        <td dir="ltr">{{ row.quotation_total_value_a|format_number }}</td>
+        {% elif label == 'b' %}
+        <td>{{ row.description_name }} {% if row.country_b %}({{ row.country_b }}){% endif %}</td>
+        <td dir="ltr">{{ row.quotation_quantity|format_number }}</td>
+        <td>{{ row.unit_name }}</td>
+        <td dir="ltr">{{ row.sales_price_b|format_number }}</td>
+        <td dir="ltr">{{ row.quotation_total_value_b|format_number }}</td>
+        {% elif label == 'c' %}
+        <td>{{ row.description_name }} {% if row.country_c %}({{ row.country_c }}){% endif %}</td>
+        <td dir="ltr">{{ row.quotation_quantity|format_number }}</td>
+        <td>{{ row.unit_name }}</td>
+        <td dir="ltr">{{ row.sales_price_c|format_number }}</td>
+        <td dir="ltr">{{ row.quotation_total_value_c|format_number }}</td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="ending-label">
+    <table>
+      <tr>
+        <td>المبلغ الكلي:</td>
+        <td dir="ltr"><b>{{ net_amount }}</b></td>
+      </tr>
+      <tr>
+        <td>{{ tax }} (<b>{{ tax_amount }}%</b>):</td>
+        <td dir="ltr"><b>{{ tax_value }}</b></td>
+      </tr>
+      <tr>
+        <td>المبلغ الكلي بعد الضريبة:</td>
+        <td dir="ltr"><b>{{ total_amount }}</b></td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="conditions">
+    <h3>الشروط والأحكام:</h3>
+    {{ conditions|safe }}
+  </div>
+
+  <hr class="ending-line" />
+</body>
+</html>

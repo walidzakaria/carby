@@ -101,7 +101,7 @@
 <body>
 
   {% if not show_template %}
-  <h1 style="margin-top: 70px; text-align: center; font-size: 18px;">عرض سعر</h1>
+  <h1 style="margin-top: 55px; text-align: center; font-size: 18px;">عرض سعر</h1>
   {% endif %}
   
   <br>
@@ -110,7 +110,7 @@
     <tr>
       <td>اسم العميل:</td>
       <td><b>{{ customer }}</b></td>
-      <td rowspan="3" style="text-align: center; font-size: 15px;"><b>(  {{ name }}  )</b></td>
+      <td rowspan="3" style="text-align: center; font-size: 15px;"><b>{% if name %}(  {{ name }}  ){% endif %}</b></td>
     </tr>
     <tr><td>رقم المستند:</td><td><b>{{ code }}</b></td>
       </tr>
