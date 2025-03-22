@@ -57,7 +57,7 @@ class QuotationSerializer(serializers.ModelSerializer):
 class QuotationSearchSerizalizer(serializers.ModelSerializer):
     class Meta:
         model = Quotation
-        fields = ('id', 'status', 'date_time_issued', 'quotation_total_amount_a', 'total_amount', 'customer', )
+        fields = ('id', 'status', 'date_time_issued', 'quotation_total_amount_a', 'name', 'total_amount', 'customer', )
 
 
 class StockSerializer(serializers.ModelSerializer):

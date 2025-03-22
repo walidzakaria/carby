@@ -15,7 +15,7 @@ class Product(models.Model):
 
 class Description(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='descriptions')
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=350)
     
     def __str__(self):
         return self.name
