@@ -119,6 +119,12 @@ class Quotation(models.Model):
     profit_b = models.DecimalField(max_digits=15, decimal_places=5, blank=True, null=True)
     profit_c = models.DecimalField(max_digits=15, decimal_places=5, blank=True, null=True)
     
+    uuid = models.UUIDField(blank=True, null=True)
+    eta_status = models.CharField(max_length=20, blank=True, null=True)
+    eta_status_detailed = models.CharField(max_length=1000, blank=True, null=True)
+    eta_total_amount = models.DecimalField(max_digits=15, decimal_places=5, default=0.00)
+    
+    
     history = HistoricalRecords()
 
     def __str__(self):
