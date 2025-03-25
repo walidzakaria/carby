@@ -29,26 +29,51 @@ SELECT
   'فرع المنيا' AS BranchName,
   eta_status_detailed AS StatusDetailed,
   'I' AS DocumentType,
-  0 AS InternalBranchID
+  '1' AS InternalBranchID
 FROM
   operation_quotation qu
   JOIN operation_customer cu ON qu.customer_id = cu.id
-  JOIN definitions_bankaccount ba ON qu.bank_account_id = ba.id --------------------------------------
-------------------
-------------------
+  JOIN definitions_bankaccount ba ON qu.bank_account_id = ba.id;
 
+------------------
+------------------
 create view InvoiceLine as
 SELECT
-qu.id AS InvoiceLineID, ql.quotation_id AS InvoiceID, de.name AS Description, 'EGS' AS ItemType, pr.code AS ItemCode,
-  ut.code AS UnitType, ql.quantity AS Quantity, ql.unit_value AS UnitValue, de.id AS InternalCode, 0 AS ValueDifference,
-  0 AS ItemsDiscount, 0 AS DiscountRate, CASE WHEN qu.tax = 'T1' THEN qu.tax_amount ELSE 0 END AS T1,
+  qu.id AS InvoiceLineID,
+  ql.quotation_id AS InvoiceID,
+  de.name AS Description,
+  'EGS' AS ItemType,
+  pr.code AS ItemCode,
+  ut.code AS UnitType,
+  ql.quantity AS Quantity,
+  ql.unit_value AS UnitValue,
+  de.id AS InternalCode,
+  0 AS ValueDifference,
+  0 AS ItemsDiscount,
+  0 AS DiscountRate,
+  CASE
+    WHEN qu.tax = 'T1' THEN qu.tax_amount
+    ELSE 0
+  END AS T1,
   0 AS T4,
-  CASE WHEN qu.tax = 'T2' THEN qu.tax_amount ELSE 0 END AS T2, 'EGP' AS SaleCurrency, 1.00 AS SaleCurrRate
+  CASE
+    WHEN qu.tax = 'T2' THEN qu.tax_amount
+    ELSE 0
+  END AS T2,
+  'EGP' AS SaleCurrency,
+  1.00 AS SaleCurrRate
+FROM
+  operation_quotation qu
+  JOIN operation_customer cu ON qu.customer_id = cu.id
+  JOIN definitions_bankaccount ba ON qu.bank_account_id = ba.id
+  JOIN operation_quotationline ql ON ql.quotation_id = qu.id
+  JOIN definitions_description de ON ql.description_id = de.id
+  JOIN definitions_product pr ON de.product_id = pr.id
+  JOIN definitions_unittype ut ON ql.unit_type_id = ut.id;
 
-FROM operation_quotation qu
-JOIN operation_customer cu ON qu.customer_id = cu.id
-JOIN definitions_bankaccount ba ON qu.bank_account_id = ba.id
-JOIN operation_quotationline ql ON ql.quotation_id = qu.id
-JOIN definitions_description de ON ql.description_id = de.id
-JOIN definitions_product pr ON de.product_id = pr.id
-JOIN definitions_unittype ut ON ql.unit_type_id = ut.id
+--------------------
+-------------------
+create view BranchsTbl as
+SELECT
+  '1' AS BranchID,
+  'Main Branch' AS BranchName
