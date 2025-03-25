@@ -67,7 +67,7 @@ def eta_list_invoices(request):
         date_filter = 'qu.date_time_issued BETWEEN %s AND %s'
         query = f'''
                 SELECT DISTINCT
-                    qu.id AS "InvoiceId", '0' AS "BranchID", 'EG' AS "Country", cu.governate AS "Governate",
+                    qu.id AS "InvoiceID", '0' AS "BranchID", 'EG' AS "Country", cu.governate AS "Governate",
                     cu.region_city AS "RegionCity",
                     cu.street AS "Street", cu.building_number AS "BuildingNumber", '' AS "PostalCode", '' AS "Floor",
                     '' AS "Room", '' AS "Landmark",
@@ -101,15 +101,43 @@ def eta_get_invoice(request, pk):
     if request.method == 'GET':
         query = '''
                 SELECT
-                    qu.id AS "InvoiceId", '0' AS "BranchID", 'EG' AS "Country", cu.governate AS "Governate", cu.region_city AS "RegionCity",
+                    qu.id AS "InvoiceID", '0' AS "BranchID", 'EG' AS "Country", cu.governate AS "Governate", cu.region_city AS "RegionCity",
                     cu.street AS "Street", cu.building_number AS "BuildingNumber", '' AS "PostalCode", '' AS "Floor", '' AS "Room", '' AS "Landmark",
                     cu.additional_information AS "AdditionalInformation", cu.type AS "ReceiverType", cu.customer_id AS "ReceiverId", cu.name AS "ReceiverName",
                     qu.date_time_issued AS "DateTimeIssued", qu.id AS "InternalId", '' AS "PurchaseOrderReference", COALESCE(qu.name, '') AS "PurchaseOrderDescription",
                     ba.bank_name AS "BankName", '' AS "BankAddress", ba.account_number AS "BankAccountNo", qu.total_amount AS "TotalAmount",
                     qu.uuid AS "UUID", qu.eta_status AS "Status", 'Planet' AS "Company", 'فرع المنيا' AS "BranchName", eta_status_detailed AS "StatusDetailed",
                     'I' AS "DocumentType", 0 AS "InternalBranchID",
+                    qu.id AS "InvoiceLineID", ql.quotation_id AS "InvoiceLineID", de.name AS "Description", 'EGS' AS "ItemType", pr.code AS "ItemCode",
+                    ut.code AS "UnitType", ql.quantity AS "Quantity", ql.unit_value AS "UnitValue", de.id AS "InternalCode", 0 AS "ValueDifference",
+                    0 AS "ItemsDiscount", 0 AS "DiscountRate", CASE WHEN qu.tax = 'T1' THEN qu.tax_amount ELSE 0 END AS "T1",
+                    CASE WHEN qu.tax = 'T2' THEN qu.tax_amount ELSE 0 END AS "T2", 'EGP' AS "SaleCurrency", 1.00 AS "SaleCurrRate"
+
+                FROM operation_quotation qu
+                JOIN operation_customer cu ON qu.customer_id = cu.id
+                JOIN definitions_bankaccount ba ON qu.bank_account_id = ba.id
+                JOIN operation_quotationline ql ON ql.quotation_id = qu.id
+                JOIN definitions_description de ON ql.description_id = de.id
+                JOIN definitions_product pr ON de.product_id = pr.id
+                JOIN definitions_unittype ut ON ql.unit_type_id = ut.id
+                WHERE qu.id = %s;
+            '''
+        with connection.cursor() as cursor:
+            cursor.execute(query, [pk])
+            columns = [col[0] for col in cursor.description]
+            rows = cursor.fetchall()
+            row_data = [dict(zip(columns, row)) for row in rows]
+            return Response(row_data, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def eta_list_invoice_lines(request, pk):
+    if request.method == 'GET':
+        query = '''
+                SELECT
                     qu.id AS "InvoiceLineID", ql.quotation_id AS "InvoiceID", de.name AS "Description", 'EGS' AS "ItemType", pr.code AS "ItemCode",
-                    ut.code AS "UnitType", ql.quantity AS "Quantity", ql.unit_value AS "UnitValue", '' AS "InternalCode", 0 AS "ValueDifference",
+                    ut.code AS "UnitType", ql.quantity AS "Quantity", ql.unit_value AS "UnitValue", de.id AS "InternalCode", 0 AS "ValueDifference",
                     0 AS "ItemsDiscount", 0 AS "DiscountRate", CASE WHEN qu.tax = 'T1' THEN qu.tax_amount ELSE 0 END AS "T1",
                     CASE WHEN qu.tax = 'T2' THEN qu.tax_amount ELSE 0 END AS "T2", 'EGP' AS "SaleCurrency", 1.00 AS "SaleCurrRate"
 
