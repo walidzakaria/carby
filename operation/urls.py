@@ -6,6 +6,7 @@ from .views import (
   QuotationInsuranceViewSet,
 )
 
+from .eta import eta_get_invoice, eta_set_status, eta_set_uuid, eta_list_invoices
 
 urlpatterns = []
 
@@ -16,5 +17,12 @@ router.register('quotation', QuotationViewSet, basename='quotation')
 router.register('stock', StockViewSet, basename='stock')
 router.register('attachment', QuotationAttachmentViewSet, basename='attachment')
 router.register('insurance', QuotationInsuranceViewSet, basename='insurance')
+
+urlpatterns += [
+    path('eta-get-invoice/<str:pk>/', eta_get_invoice, name='eta-get-invoice'),
+    path('eta-set-status/<str:pk>/', eta_set_status, name='eta-set-status'),
+    path('eta-set-uuid/<str:pk>/', eta_set_uuid, name='eta-set-uuid'),
+    path('eta-list-invoices/', eta_list_invoices, name='eta-list-invoices'),
+]
 
 urlpatterns += router.urls
