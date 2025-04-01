@@ -9,6 +9,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status
 from rest_framework.response import Response
+from django.views.decorators.csrf import csrf_exempt
 
 
 from rest_framework.schemas import ManualSchema
@@ -17,6 +18,7 @@ from datetime import datetime, time
 
 
 @api_view(['POST'])
+@csrf_exempt
 @permission_classes([IsAuthenticated])
 def eta_set_uuid(request, pk):
     if request.method == 'POST':
@@ -35,6 +37,7 @@ def eta_set_uuid(request, pk):
 
 
 @api_view(['POST'])
+@csrf_exempt
 @permission_classes([IsAuthenticated])
 def eta_set_status(request, pk):
     if request.method == 'POST':
@@ -53,6 +56,7 @@ def eta_set_status(request, pk):
         return Response({'msg': 'Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
+@csrf_exempt
 @permission_classes([IsAuthenticated])
 def eta_list_invoices(request):
     if request.method == 'GET':
@@ -96,6 +100,7 @@ def eta_list_invoices(request):
 
 
 @api_view(['GET'])
+@csrf_exempt
 @permission_classes([IsAuthenticated])
 def eta_get_invoice(request, pk):
     if request.method == 'GET':
@@ -131,6 +136,7 @@ def eta_get_invoice(request, pk):
 
 
 @api_view(['GET'])
+@csrf_exempt
 @permission_classes([IsAuthenticated])
 def eta_list_invoice_lines(request, pk):
     if request.method == 'GET':
@@ -156,4 +162,3 @@ def eta_list_invoice_lines(request, pk):
             rows = cursor.fetchall()
             row_data = [dict(zip(columns, row)) for row in rows]
             return Response(row_data, status=status.HTTP_200_OK)
-        
