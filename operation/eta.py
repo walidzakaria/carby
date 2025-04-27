@@ -114,7 +114,7 @@ def eta_get_invoice(request, pk):
                     qu.uuid AS "UUID", qu.eta_status AS "Status", 'Planet' AS "Company", 'فرع المنيا' AS "BranchName", eta_status_detailed AS "StatusDetailed",
                     'I' AS "DocumentType", 0 AS "InternalBranchID",
                     qu.id AS "InvoiceLineID", ql.quotation_id AS "InvoiceLineID", de.name AS "Description", 'EGS' AS "ItemType", pr.code AS "ItemCode",
-                    ut.code AS "UnitType", ql.quantity AS "Quantity", ql.unit_value AS "UnitValue", de.id AS "InternalCode", 0 AS "ValueDifference",
+                    ut.code AS "UnitType", ql.quantity AS "Quantity", ql.sales_price AS "UnitValue", de.id AS "InternalCode", 0 AS "ValueDifference",
                     0 AS "ItemsDiscount", 0 AS "DiscountRate", CASE WHEN qu.tax = 'T1' THEN qu.tax_amount ELSE 0 END AS "T1",
                     CASE WHEN qu.tax = 'T2' THEN qu.tax_amount ELSE 0 END AS "T2", 'EGP' AS "SaleCurrency", 1.00 AS "SaleCurrRate"
 
@@ -143,7 +143,7 @@ def eta_list_invoice_lines(request, pk):
         query = '''
                 SELECT
                     qu.id AS "InvoiceLineID", ql.quotation_id AS "InvoiceID", de.name AS "Description", 'EGS' AS "ItemType", pr.code AS "ItemCode",
-                    ut.code AS "UnitType", ql.quantity AS "Quantity", ql.unit_value AS "UnitValue", de.id AS "InternalCode", 0 AS "ValueDifference",
+                    ut.code AS "UnitType", ql.quantity AS "Quantity", ql.sales_price AS "UnitValue", de.id AS "InternalCode", 0 AS "ValueDifference",
                     0 AS "ItemsDiscount", 0 AS "DiscountRate", CASE WHEN qu.tax = 'T1' THEN qu.tax_amount ELSE 0 END AS "T1",
                     CASE WHEN qu.tax = 'T2' THEN qu.tax_amount ELSE 0 END AS "T2", 'EGP' AS "SaleCurrency", 1.00 AS "SaleCurrRate"
 
