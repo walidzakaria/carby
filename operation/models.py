@@ -93,7 +93,6 @@ class Quotation(models.Model):
     status = models.CharField(max_length=15, choices=StatusOption.choices, default=StatusOption.QUOTATION,
                               verbose_name=_('Status'))
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
-    date_time_issued = models.DateTimeField(default=timezone.now)
     date_issued = models.DateField(default=timezone.now)
 
     creation_date = models.DateTimeField(auto_now_add=True)
