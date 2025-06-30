@@ -94,6 +94,7 @@ class Quotation(models.Model):
                               verbose_name=_('Status'))
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
     date_time_issued = models.DateTimeField(default=timezone.now)
+    date_issued = models.DateField(default=timezone.now)
 
     creation_date = models.DateTimeField(auto_now_add=True)
     modified_date = models.DateTimeField(auto_now=True)

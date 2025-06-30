@@ -92,7 +92,7 @@ class QuotationOrdersView(APIView):
             'customer': quotation.customer.name,
             'code': quotation_id,
             'name': quotation.name,
-            'date': quotation.date_time_issued.strftime("%Y-%m-%d"),
+            'date': quotation.date_issued.strftime("%Y-%m-%d"),
             'rows': row_data,
             'conditions': quotation.conditions,
             'net_amount': f"{net_amount:,.2f}",

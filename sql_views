@@ -15,7 +15,7 @@ SELECT
   cu.type AS ReceiverType,
   cu.customer_id AS ReceiverId,
   cu.name AS ReceiverName,
-  qu.date_time_issued AS DateTimeIssued,
+  qu.date_issued AS DateIssued,
   qu.id AS InternalId,
   '' AS PurchaseOrderReference,
   COALESCE(qu.name, '') AS PurchaseOrderDescription,

@@ -31,7 +31,7 @@ class QuotationInsuranceTabular(admin.TabularInline):
 
 @admin.register(Quotation)
 class QuotationAdmin(admin.ModelAdmin):
-    list_display = ('id', 'customer', 'date_time_issued', )
+    list_display = ('id', 'customer',  )
     search_fields = ('customer__name', )
     inlines = [QuotationLineTabular, QuotationAttachmentTabular, QuotationInsuranceTabular, ]
     readonly_fields = ('creation_date', 'modified_date', 'created_by', 'updated_by', )

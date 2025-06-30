@@ -131,10 +131,11 @@ class QuotationViewSet(viewsets.ModelViewSet):
         start_date = request.query_params.get('start_date')
         end_date = request.query_params.get('end_date')
         status = request.query_params.get('status')
+        print(request.query_params)
         start_date = parse_date(start_date)
         end_date = parse_date(end_date)
         
-        queryset = self.get_queryset().filter(date_time_issued__range=(start_date, end_date))
+        queryset = self.get_queryset().filter(date_issued__range=(start_date, end_date))
 
         if customer:
             queryset = queryset.filter(customer=customer)
